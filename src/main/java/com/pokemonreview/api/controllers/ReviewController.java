@@ -16,6 +16,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
+    // final, @RequiredArgsConstructor 등록사용으로 주석처리 
 //    public ReviewController(ReviewService reviewService) {
 //        this.reviewService = reviewService;
 //    }
