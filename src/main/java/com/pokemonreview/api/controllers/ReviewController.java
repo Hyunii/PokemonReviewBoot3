@@ -52,4 +52,5 @@ public class ReviewController {
         reviewService.deleteReview(pokemonId, reviewId);
         return new ResponseEntity<>("Review deleted successfully", HttpStatus.OK);
     }
+
 }
