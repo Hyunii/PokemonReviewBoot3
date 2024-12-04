@@ -109,17 +109,18 @@ public class PokemonRepositoryTests {
 
         pokemonRepository.save(pokemon);
 
-				Pokemon pokemonSave = pokemonRepository
+		Pokemon pokemonSave = pokemonRepository
                 .findById(pokemon.getId())
                 .orElseThrow();
                 //.get();
+        // Setter Method 호출 - Dirty Checking
         pokemonSave.setName("Raichu");
         pokemonSave.setType(PokemonType.NORMAL);        
 
         assertThat(pokemonSave.getName()).isEqualTo("Raichu");
         assertThat(pokemonSave.getType()).isEqualTo(PokemonType.NORMAL);
 
-        System.out.println("pokemonSave = " + pokemonSave);
+        //System.out.println("pokemonSave = " + pokemonSave);
     }
 
     @Test
