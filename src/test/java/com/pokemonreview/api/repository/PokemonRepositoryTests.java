@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
@@ -17,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+//@TestPropertySource(locations = "classpath:application-test.properties")
+@ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:/application-test.properties")
 public class PokemonRepositoryTests {
 
@@ -72,7 +75,8 @@ public class PokemonRepositoryTests {
 
         Pokemon savedPokemon = pokemonRepository
                 .findById(pokemon.getId())  //Optional<Pokemon>
-                .get();
+                //.get();   // Optional<T> T가 Null 이면 NoSuchElementException 발생함
+                .orElseThrow();
 
         assertThat(savedPokemon).isNotNull();
         assertThat(savedPokemon.getName()).isEqualTo("Pikachu");
@@ -89,7 +93,8 @@ public class PokemonRepositoryTests {
 
         Pokemon existPokemon = pokemonRepository
                 .findByType(pokemon.getType())
-                .get();
+                .orElseThrow();
+                //.get();
 
         assertThat(existPokemon).isNotNull();
         assertThat(existPokemon.getType().name()).isEqualTo(PokemonType.ELECTRIC.name());
@@ -106,7 +111,8 @@ public class PokemonRepositoryTests {
 
 				Pokemon pokemonSave = pokemonRepository
                 .findById(pokemon.getId())
-                .get();
+                .orElseThrow();
+                //.get();
         pokemonSave.setName("Raichu");
         pokemonSave.setType(PokemonType.NORMAL);        
 
