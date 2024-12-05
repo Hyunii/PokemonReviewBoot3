@@ -7,9 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 @RestControllerAdvice
 @Slf4j
@@ -48,6 +50,21 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage(), e);
 
         return new ResponseEntity<ErrorObject>(errorObject, HttpStatusCode.valueOf(500));
+    }
+
+    // 403(권한없음) 예외 발생
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public void accessDeniedExceptionHandler(Exception e)  {
+        try {
+            throw new AccessDeniedException(e.getMessage());
+        } catch (AccessDeniedException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    // 401(인증실패) 예외발생
+    @ExceptionHandler(value = BadCredentialsException.class)
+    public void badCredentialExceptionHandler(BadCredentialsException e){
+        throw new BadCredentialsException(e.getMessage());
     }
 
 }
