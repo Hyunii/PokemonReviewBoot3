@@ -28,29 +28,30 @@ public class AdminController {
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping
-		@PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public PageResponse getAllUsers(
-						@RequestParam(value = "pageNo", defaultValue = "0", required = false) 
-            int pageNo,
-            @RequestParam(value = "pageSize", defaultValue = "2", required = false) 
-            int pageSize) {
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public PageResponse<?> getAllUsers(
+			@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "2", required = false) int pageSize) {
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id")
-.descending());
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
         Page<UserEntity> userEntityPage = userRepository.findAll(pageable);
         List<UserEntity> listOfUser = userEntityPage.getContent();
         List<UserDto> userDtoList =
                 listOfUser.stream()
-                    .map(entity -> UserDto.builder()
-                    .id(entity.getId())
-                    .username(entity.getUsername())
-                    .firstName(entity.getFirstName())
-                    .lastName(entity.getLastName())
-                    .role(entity.getRoles().get(0).getName())
-                    .build())
-                    .collect(Collectors.toList());
+//                    .map(entity -> UserDto.builder()
+//                        .id(entity.getId())
+//                        .username(entity.getUsername())
+//                        .firstName(entity.getFirstName())
+//                        .lastName(entity.getLastName())
+//                        .role(entity.getRoles().get(0).getName())
+//                        .build()
+//                    )
+//                    .collect(Collectors.toList());
+                      .map(this::mapToDto)  // password 포함
+                      .toList();
 
-        PageResponse userResponse = new PageResponse();
+
+        PageResponse<UserDto> userResponse = new PageResponse<>();
         userResponse.setContent(userDtoList);
         userResponse.setPageNo(userEntityPage.getNumber());
         userResponse.setPageSize(userEntityPage.getSize());
@@ -62,22 +63,21 @@ public class AdminController {
     }
 
     @GetMapping("/{id}")
-		//@PreAuthorize("hasAuthority('ROLE_USER')")
-		@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+	//@PreAuthorize("hasAuthority('ROLE_USER')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     public UserDto getUser(@PathVariable("id") int userId) {
         UserEntity existUser = userRepository
                 .findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        UserDto existUserDto = mapToDto(existUser);
-        return existUserDto;
+        return  mapToDto(existUser);
     }
 
     private UserDto mapToDto(UserEntity userEntity) {
         UserDto userDto = new UserDto();
         userDto.setId(userEntity.getId());
         userDto.setUsername(userEntity.getUsername());
-				userDto.setFirstName(userEntity.getFirstName());
+		userDto.setFirstName(userEntity.getFirstName());
         userDto.setLastName(userEntity.getLastName());
         userDto.setPassword(userEntity.getPassword());
         userDto.setRole(userEntity.getRoles().get(0).getName());
