@@ -34,6 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new User(
                 user.getUsername(),
                 user.getPassword(),
+                // Collection<GrantedAuthority>
                 mapRolesToAuthorities(user.getRoles()));
     }
 

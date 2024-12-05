@@ -24,10 +24,10 @@ public class JWTGenerator {
 		Date exprireDate = Date.from(Instant.now().plusSeconds(SecurityConstants.JWT_EXPIRATION));
 		
 		String token = Jwts.builder() //JwtBuilder
-				.subject(username)
-				.issuedAt(new Date())
-				.expiration(exprireDate)
-				.signWith(KEY, ALGORITHM)
+				.subject(username)	// payload
+				.issuedAt(new Date())	// 발행시간
+				.expiration(exprireDate)	// 만료시간
+				.signWith(KEY, ALGORITHM)	// 시키릿키, 알고리즘
 				.compact();
 
 		System.out.println("New token :"  + token);
